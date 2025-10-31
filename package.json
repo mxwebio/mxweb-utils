@@ -1,0 +1,155 @@
+{
+  "name": "@mxweb/utils",
+  "version": "0.0.1",
+  "description": "A comprehensive collection of TypeScript utilities for modern web development",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "author": "MXWeb Team <contact@mxweb.io>",
+  "homepage": "https://github.com/mxwebio/mxweb-utils#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mxwebio/mxweb-utils.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mxwebio/mxweb-utils/issues"
+  },
+  "keywords": [
+    "utilities",
+    "typescript",
+    "http",
+    "storage",
+    "helpers",
+    "utils",
+    "lodash",
+    "axios",
+    "fetch",
+    "localStorage",
+    "sessionStorage",
+    "cookies",
+    "chunk",
+    "flatten",
+    "format",
+    "interpolate",
+    "mxweb"
+  ],
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "yarn lint && rollup -c",
+    "build:watch": "rollup -c -w",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,json,md}\"",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
+    "@rollup/plugin-babel": "^6.1.0",
+    "@rollup/plugin-commonjs": "^29.0.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.3.0",
+    "@types/node": "^24.9.2",
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
+    "@vitest/coverage-v8": "1.6.0",
+    "@vitest/ui": "1.6.0",
+    "eslint": "^9.38.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "prettier": "^3.6.2",
+    "rollup": "^4.52.5",
+    "rollup-plugin-dts": "^6.2.3",
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.3",
+    "vitest": "1.6.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.esm.js"
+    },
+    "./chunk": {
+      "types": "./dist/chunk.d.ts",
+      "import": "./dist/chunk.esm.js",
+      "require": "./dist/chunk.js",
+      "default": "./dist/chunk.esm.js"
+    },
+    "./flatten": {
+      "types": "./dist/flatten.d.ts",
+      "import": "./dist/flatten.esm.js",
+      "require": "./dist/flatten.js",
+      "default": "./dist/flatten.esm.js"
+    },
+    "./format-size": {
+      "types": "./dist/format-size.d.ts",
+      "import": "./dist/format-size.esm.js",
+      "require": "./dist/format-size.js",
+      "default": "./dist/format-size.esm.js"
+    },
+    "./get-env": {
+      "types": "./dist/get-env.d.ts",
+      "import": "./dist/get-env.esm.js",
+      "require": "./dist/get-env.js",
+      "default": "./dist/get-env.esm.js"
+    },
+    "./http": {
+      "types": "./dist/http.d.ts",
+      "import": "./dist/http.esm.js",
+      "require": "./dist/http.js",
+      "default": "./dist/http.esm.js"
+    },
+    "./interpolate": {
+      "types": "./dist/interpolate.d.ts",
+      "import": "./dist/interpolate.esm.js",
+      "require": "./dist/interpolate.js",
+      "default": "./dist/interpolate.esm.js"
+    },
+    "./pascal-to-kebab": {
+      "types": "./dist/pascal-to-kebab.d.ts",
+      "import": "./dist/pascal-to-kebab.esm.js",
+      "require": "./dist/pascal-to-kebab.js",
+      "default": "./dist/pascal-to-kebab.esm.js"
+    },
+    "./sleep": {
+      "types": "./dist/sleep.d.ts",
+      "import": "./dist/sleep.esm.js",
+      "require": "./dist/sleep.js",
+      "default": "./dist/sleep.esm.js"
+    },
+    "./storage": {
+      "types": "./dist/storage.d.ts",
+      "import": "./dist/storage.esm.js",
+      "require": "./dist/storage.js",
+      "default": "./dist/storage.esm.js"
+    },
+    "./uri": {
+      "types": "./dist/uri.d.ts",
+      "import": "./dist/uri.esm.js",
+      "require": "./dist/uri.js",
+      "default": "./dist/uri.esm.js"
+    },
+    "./package.json": "./package.json"
+  }
+}
