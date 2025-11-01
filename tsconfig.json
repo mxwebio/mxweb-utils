@@ -4,23 +4,23 @@
     "target": "ES2020",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "jsx": "react",
-    
+
     /* Modules */
     "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    
+
     /* Emit */
     "declaration": true,
     "outDir": "./dist",
     "removeComments": false,
-    
+
     /* Interop Constraints */
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
-    
+
     /* Type Checking */
     "strict": true,
     "noImplicitAny": true,
@@ -37,17 +37,10 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": false,
-    
+
     /* Completeness */
     "skipLibCheck": true
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/*.test.ts",
-    "**/*.spec.ts"
-  ]
+  "include": ["src/**/*", "vitest.setup.ts"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
 }
