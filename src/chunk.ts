@@ -53,6 +53,8 @@
  * const products = ['A', 'B', 'C', 'D', 'E', 'F'];
  * const rows = chunk(products, 3); // 3 products per row
  * ```
+ *
+ * @since 0.0.1
  */
 export function chunk<T>(source: T[], size = 5): T[][] {
   size = Math.max(size, 1);

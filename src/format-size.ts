@@ -2,6 +2,8 @@
  * Default base units for file size formatting using binary (1024-based) conversion.
  *
  * Units progression: Bytes → Kilobytes → Megabytes → Gigabytes → Terabytes
+ *
+ * @since 0.0.1
  */
 export const BASE_SIZE_UNITS = ["B", "KB", "MB", "GB", "TB"];
 
@@ -49,6 +51,8 @@ export const BASE_SIZE_UNITS = ["B", "KB", "MB", "GB", "TB"];
  * const downloadSpeed = 5242880; // bytes per second
  * console.log(`Speed: ${formatSize(downloadSpeed)}/s`); // "Speed: 5 MB/s"
  * ```
+ *
+ * @since 0.0.1
  */
 export function formatSize(sizeInBytes: number, base: Array<string> = BASE_SIZE_UNITS): string {
   if (sizeInBytes <= 0 || Number.isNaN(sizeInBytes) || !Number.isFinite(sizeInBytes)) {

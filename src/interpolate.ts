@@ -50,6 +50,8 @@ import { flatten } from "./flatten";
  * });
  * // Returns: "/api/users/123/posts/456"
  * ```
+ *
+ * @since 0.0.1
  */
 export function interpolate(
   pattern: string,

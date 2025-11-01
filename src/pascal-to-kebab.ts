@@ -30,6 +30,8 @@
  * pascalToKebab(''); // Returns: ""
  * pascalToKebab(null); // Returns: null
  * ```
+ *
+ * @since 0.0.1
  */
 export function pascalToKebab(str: string): string {
   if (!str) {

@@ -1,5 +1,7 @@
 /**
  * Types of storage mechanisms supported by the storage utility.
+ *
+ * @since 0.0.1
  */
 type StorageType = "localStorage" | "sessionStorage" | "cookie";
 
@@ -8,12 +10,16 @@ type StorageType = "localStorage" | "sessionStorage" | "cookie";
  *
  * This class abstracts away the differences between localStorage, sessionStorage, and cookies,
  * providing a consistent API for storing and retrieving data with automatic JSON serialization.
+ *
+ * @since 0.0.1
  */
 class InnerStorage {
   /**
    * Creates a new InnerStorage instance.
    *
    * @param storageType - The type of storage to use. Defaults to "localStorage".
+   *
+   * @since 0.0.1
    */
   constructor(private readonly storageType: StorageType = "localStorage") {}
 
@@ -23,6 +29,8 @@ class InnerStorage {
    * @param key - The key to retrieve the value for
    * @returns The stored string value, or null if not found or in a server environment
    * @private
+   *
+   * @since 0.0.1
    */
   private get(key: string): string | null {
     if (typeof window === "undefined") {
@@ -52,6 +60,8 @@ class InnerStorage {
    * @param key - The key to store the value under
    * @param value - The string value to store
    * @private
+   *
+   * @since 0.0.1
    */
   private set(key: string, value: string): void {
     if (typeof window === "undefined") {
@@ -76,6 +86,8 @@ class InnerStorage {
    *
    * @param key - The key of the value to remove
    * @private
+   *
+   * @since 0.0.1
    */
   private remove(key: string): void {
     if (typeof window === "undefined") {
@@ -113,6 +125,8 @@ class InnerStorage {
    * // Store and retrieve a primitive
    * const count = storage.session.getItem<number>('count');
    * ```
+   *
+   * @since 0.0.1
    */
   getItem<T>(key: string): T | null {
     const item = this.get(key);
@@ -149,6 +163,8 @@ class InnerStorage {
    * // Store a string
    * storage.cookie.setItem('token', 'abc123');
    * ```
+   *
+   * @since 0.0.1
    */
   setItem<T = string>(key: string, value: T): void {
     const item = typeof value === "string" ? value : JSON.stringify(value);
@@ -174,6 +190,8 @@ class InnerStorage {
    * // Remove a cookie
    * storage.cookie.removeItem('preferences');
    * ```
+   *
+   * @since 0.0.1
    */
   removeItem(key: string): void {
     this.remove(key);
@@ -200,6 +218,8 @@ class InnerStorage {
  * // Create a custom storage instance
  * const customStorage = storage.from('localStorage');
  * ```
+ *
+ * @since 0.0.1
  */
 export const storage = {
   /**
@@ -207,6 +227,8 @@ export const storage = {
    *
    * @param type - The type of storage to create ("localStorage", "sessionStorage", or "cookie")
    * @returns A new InnerStorage instance configured for the specified storage type
+   *
+   * @since 0.0.1
    */
   from(type: StorageType): InnerStorage {
     return new InnerStorage(type);
@@ -215,6 +237,8 @@ export const storage = {
    * Gets a localStorage instance.
    *
    * @returns A new InnerStorage instance configured for localStorage
+   *
+   * @since 0.0.1
    */
   get local() {
     return new InnerStorage("localStorage");
@@ -223,6 +247,8 @@ export const storage = {
    * Gets a sessionStorage instance.
    *
    * @returns A new InnerStorage instance configured for sessionStorage
+   *
+   * @since 0.0.1
    */
   get session() {
     return new InnerStorage("sessionStorage");
@@ -231,6 +257,8 @@ export const storage = {
    * Gets a cookie storage instance.
    *
    * @returns A new InnerStorage instance configured for cookie storage
+   *
+   * @since 0.0.1
    */
   get cookie() {
     return new InnerStorage("cookie");

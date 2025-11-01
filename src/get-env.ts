@@ -1,6 +1,8 @@
 /**
  * Polyfill interface for the Node.js process object to ensure type safety
  * in environments where process may not be available.
+ *
+ * @since 0.0.1
  */
 interface PolyfillProcess {
   env: {
@@ -12,6 +14,8 @@ interface PolyfillProcess {
 /**
  * Internal process object that provides environment variables access.
  * Falls back to a polyfill with production defaults if process is undefined (browser environment).
+ *
+ * @since 0.0.1
  */
 let _process: PolyfillProcess = process as unknown as PolyfillProcess;
 
@@ -88,6 +92,8 @@ if (typeof process === "undefined") {
  *   debug: getEnv('DEBUG', 'false') === 'true',
  * };
  * ```
+ *
+ * @since 0.0.1
  */
 export function getEnv<T>(
   key: string,

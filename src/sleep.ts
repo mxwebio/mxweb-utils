@@ -31,6 +31,8 @@
  *   }
  * }
  * ```
+ *
+ * @since 0.0.1
  */
 export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, Math.max(ms, 0)));

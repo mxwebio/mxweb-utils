@@ -5,6 +5,8 @@ import { interpolate } from "./interpolate";
 
 /**
  * HTTP methods supported by the Http client.
+ *
+ * @since 0.0.1
  */
 export enum HttpMethod {
   GET = "GET",
@@ -19,6 +21,8 @@ export enum HttpMethod {
 /**
  * Valid query parameter types for HTTP requests.
  * Can be a string, object with primitive values, array of key-value tuples, or URLSearchParams.
+ *
+ * @since 0.0.1
  */
 export type HttpQuery =
   | string
@@ -33,6 +37,8 @@ export type HttpQuery =
  * @template Params - The type of URL path parameters (used for interpolation)
  * @template Query - The type of query string parameters
  * @template Headers - The type of request headers
+ *
+ * @since 0.0.1
  */
 export interface HttpRequest<
   Body = unknown,
@@ -52,6 +58,8 @@ export interface HttpRequest<
 /**
  * Interface for storage implementations (localStorage, sessionStorage, cookies, etc.)
  * used for persisting authentication tokens.
+ *
+ * @since 0.0.1
  */
 export interface HttpStorage {
   getItem(key: string): string | null;
@@ -61,21 +69,29 @@ export interface HttpStorage {
 
 /**
  * Interceptor function that modifies HTTP requests before they are sent.
+ *
+ * @since 0.0.1
  */
 export type HttpInterceptorRequest = (options: HttpRequest) => Promise<HttpRequest> | HttpRequest;
 
 /**
  * Interceptor function that processes HTTP responses before they are returned.
+ *
+ * @since 0.0.1
  */
 export type HttpInterceptorResponse = (response: Response) => Promise<Response> | Response;
 
 /**
  * Interceptor function that handles errors during HTTP requests.
+ *
+ * @since 0.0.1
  */
 export type HttpInterceptorError = (error: unknown) => Promise<any> | any;
 
 /**
  * Parameters for registering HTTP interceptors.
+ *
+ * @since 0.0.1
  */
 export type HttpInterceptorParameters =
   | ["request", HttpInterceptorRequest]
@@ -87,6 +103,8 @@ export type HttpInterceptorParameters =
  *
  * @template T - The type of successful response data
  * @template E - The type of error response data
+ *
+ * @since 0.0.1
  */
 export interface HttpResponse<T = unknown, E = unknown> {
   success: boolean;
@@ -99,6 +117,8 @@ export interface HttpResponse<T = unknown, E = unknown> {
 
 /**
  * Progress information for file uploads.
+ *
+ * @since 0.0.1
  */
 export interface HttpProgress {
   loaded: number;
@@ -108,6 +128,8 @@ export interface HttpProgress {
 
 /**
  * Configuration options for file upload requests.
+ *
+ * @since 0.0.1
  */
 export interface HttpUploadOptions
   extends Pick<HttpRequest, "headers" | "params" | "signal" | "query"> {
@@ -118,6 +140,8 @@ export interface HttpUploadOptions
 
 /**
  * Configuration options for creating inferred HTTP client functions.
+ *
+ * @since 0.0.1
  */
 export interface HttpInferOptions {
   baseURL?: string;
@@ -132,6 +156,8 @@ export interface HttpInferOptions {
  * @template T - The type of successful response data
  * @template Args - The types of function arguments
  * @template E - The type of error response data
+ *
+ * @since 0.0.1
  */
 export interface HttpInfer<T = unknown, Args extends any[] = [], E = unknown> {
   key: string;
@@ -174,22 +200,36 @@ export interface HttpInfer<T = unknown, Args extends any[] = [], E = unknown> {
  *   return options;
  * });
  * ```
+ *
+ * @since 0.0.1
  */
 export class Http {
   static readonly method = HttpMethod;
-  /** Storage key for authentication token */
+  /** Storage key for authentication token *
+   * @since 0.0.1
+   */
   static authTokenKey = "access_token";
-  /** Header key for authentication */
+  /** Header key for authentication *
+   * @since 0.0.1
+   */
   static authHeaderKey = "Authorization";
-  /** Authentication header type/prefix (e.g., "Bearer") */
+  /** Authentication header type/prefix (e.g., "Bearer") *
+   * @since 0.0.1
+   */
   static authHeaderType = "Bearer";
 
-  /** Storage locations to check for authentication token */
+  /** Storage locations to check for authentication token *
+   * @since 0.0.1
+   */
   static authDetectToken = ["localStorage", "sessionStorage", "cookie"];
 
-  /** Extra headers to be added to all requests */
+  /** Extra headers to be added to all requests *
+   * @since 0.0.1
+   */
   static extraHeaders: Record<string, string> | null = null;
-  /** Static storage instance */
+  /** Static storage instance *
+   * @since 0.0.1
+   */
   static storage: HttpStorage | null = null;
 
   private defaultHeaders: Record<string, string> = {
@@ -215,6 +255,8 @@ export class Http {
    * Creates a new Http client instance.
    *
    * @param baseURL - The base URL for all requests. Defaults to API_URL environment variable or "/".
+   *
+   * @since 0.0.1
    */
   constructor(private readonly baseURL = getEnv("API_URL", "/")) {}
 
@@ -222,6 +264,8 @@ export class Http {
    * Registers a static interceptor for all Http instances.
    *
    * @param params - Tuple of interceptor type and handler function
+   *
+   * @since 0.0.1
    */
   static on(...params: HttpInterceptorParameters) {
     const [type, handler] = params;
@@ -234,6 +278,8 @@ export class Http {
    * Removes a static interceptor from all Http instances.
    *
    * @param params - Tuple of interceptor type and handler function
+   *
+   * @since 0.0.1
    */
   static off(...params: HttpInterceptorParameters) {
     const [type, handler] = params;
@@ -245,6 +291,8 @@ export class Http {
    * Sets the storage implementation for this Http instance.
    *
    * @param storage - Storage implementation for persisting authentication tokens
+   *
+   * @since 0.0.1
    */
   setStorage(storage: HttpStorage) {
     this.storage = storage;
@@ -255,6 +303,8 @@ export class Http {
    *
    * @param query - The value to validate
    * @returns True if the value is a valid HttpQuery type
+   *
+   * @since 0.0.1
    */
   isValidQuery(query: unknown): query is HttpQuery {
     if (typeof query === "string" || query instanceof URLSearchParams) {
@@ -292,6 +342,8 @@ export class Http {
    *
    * @param options - The HTTP request options
    * @returns The constructed query string
+   *
+   * @since 0.0.1
    */
   getQuery<Params extends Record<string, unknown>>(options: HttpRequest<unknown, Params>): string {
     const { method, body, query } = options;
@@ -326,6 +378,8 @@ export class Http {
    *
    * @param body - The body to check
    * @returns True if the body is FormData
+   *
+   * @since 0.0.1
    */
   isFormData(body: unknown): body is FormData {
     return body instanceof FormData;
@@ -335,6 +389,8 @@ export class Http {
    * Adds headers to the default headers for this instance.
    *
    * @param headers - Headers to add
+   *
+   * @since 0.0.1
    */
   addHeaders(headers: Record<string, string>) {
     this.defaultHeaders = {
@@ -348,6 +404,8 @@ export class Http {
    *
    * @param params - Tuple of interceptor type and handler function
    * @returns This Http instance for method chaining
+   *
+   * @since 0.0.1
    */
   on(...params: HttpInterceptorParameters) {
     const [type, handler] = params;
@@ -362,6 +420,8 @@ export class Http {
    *
    * @param params - Tuple of interceptor type and handler function
    * @returns This Http instance for method chaining
+   *
+   * @since 0.0.1
    */
   off(...params: HttpInterceptorParameters) {
     const [type, handler] = params;
@@ -374,6 +434,8 @@ export class Http {
    * Retrieves the authentication token from storage and formats it for the Authorization header.
    *
    * @returns Object with header key and formatted token value
+   *
+   * @since 0.0.1
    */
   getToken() {
     const authTokenKey = getEnv("API_AUTH_TOKEN_KEY", Http.authTokenKey)?.trim();
@@ -415,6 +477,8 @@ export class Http {
    * @param headers - Custom headers to include
    * @param isFormData - Whether the request body is FormData
    * @returns Complete headers object
+   *
+   * @since 0.0.1
    */
   getHeaders(headers: Record<string, string> = {}, isFormData?: boolean) {
     const token = this.getToken();
@@ -445,6 +509,8 @@ export class Http {
    *
    * @param options - The HTTP request options
    * @returns The complete URL string
+   *
+   * @since 0.0.1
    */
   getURL(options: HttpRequest): string {
     const { url, params = {} } = options;
@@ -475,6 +541,8 @@ export class Http {
    *
    * @param options - The HTTP request options
    * @returns The prepared body or undefined
+   *
+   * @since 0.0.1
    */
   getBody(options: HttpRequest) {
     const { method, body } = options;
@@ -505,6 +573,8 @@ export class Http {
    * @template E - The type of error response data
    * @param options - The HTTP request options
    * @returns Promise resolving to standardized HTTP response
+   *
+   * @since 0.0.1
    */
   async request<T = unknown, E = unknown>(options: HttpRequest): Promise<HttpResponse<T, E>> {
     const { method = HttpMethod.GET } = options;
@@ -590,6 +660,8 @@ export class Http {
    * @param query - Query parameters
    * @param options - Additional request options
    * @returns Promise resolving to HTTP response
+   *
+   * @since 0.0.1
    */
   get<T = unknown, Query = Record<string, unknown>, E = unknown>(
     url: string,
@@ -614,6 +686,8 @@ export class Http {
    * @param body - The request body
    * @param options - Additional request options
    * @returns Promise resolving to HTTP response
+   *
+   * @since 0.0.1
    */
   post<T = unknown, Body = unknown, E = unknown>(
     url: string,
@@ -638,6 +712,8 @@ export class Http {
    * @param body - The request body
    * @param options - Additional request options
    * @returns Promise resolving to HTTP response
+   *
+   * @since 0.0.1
    */
   put<T = unknown, Body = unknown, E = unknown>(
     url: string,
@@ -662,6 +738,8 @@ export class Http {
    * @param body - The request body
    * @param options - Additional request options
    * @returns Promise resolving to HTTP response
+   *
+   * @since 0.0.1
    */
   patch<T = unknown, Body = unknown, E = unknown>(
     url: string,
@@ -684,6 +762,8 @@ export class Http {
    * @param url - The request URL
    * @param options - Additional request options
    * @returns Promise resolving to HTTP response
+   *
+   * @since 0.0.1
    */
   delete<T = unknown, E = unknown>(
     url: string,
@@ -704,6 +784,8 @@ export class Http {
    * @param url - The request URL
    * @param options - Additional request options
    * @returns Promise resolving to HTTP response
+   *
+   * @since 0.0.1
    */
   head<T = unknown, E = unknown>(
     url: string,
@@ -724,6 +806,8 @@ export class Http {
    * @param url - The request URL
    * @param options - Additional request options
    * @returns Promise resolving to HTTP response
+   *
+   * @since 0.0.1
    */
   options<T = unknown, E = unknown>(
     url: string,
@@ -761,6 +845,8 @@ export class Http {
    *   body: { userId: 123 }
    * });
    * ```
+   *
+   * @since 0.0.1
    */
   upload<T = unknown, E = unknown>(
     url: string,
@@ -986,6 +1072,8 @@ export class Http {
    * const { data: users } = await getUsers.fn();
    * const { data: newUser } = await createUser.fn({ name: 'John' });
    * ```
+   *
+   * @since 0.0.1
    */
   static createInfer(options: HttpInferOptions = {}) {
     const instance = options.http || new Http(options.baseURL);

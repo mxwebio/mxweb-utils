@@ -22,6 +22,8 @@
  * // Decode a full URI
  * decodeURISafe('https://example.com/path%20with%20spaces', false);
  * ```
+ *
+ * @since 0.0.1
  */
 export function decodeURISafe(str: string, component = true): string {
   const handle = component ? decodeURIComponent : decodeURI;
@@ -59,6 +61,8 @@ export function decodeURISafe(str: string, component = true): string {
  * encodeURISafe('https://example.com/path with spaces', false);
  * // Returns: "https://example.com/path%20with%20spaces"
  * ```
+ *
+ * @since 0.0.1
  */
 export function encodeURISafe(str: string, component = true): string {
   const handle = component ? encodeURIComponent : encodeURI;
