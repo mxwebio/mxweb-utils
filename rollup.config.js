@@ -1,86 +1,84 @@
-import typescript from '@rollup/plugin-typescript';
-import resolve from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
-import babel from '@rollup/plugin-babel';
-import dts from 'rollup-plugin-dts';
-import terser from '@rollup/plugin-terser';
+import typescript from "@rollup/plugin-typescript";
+import terser from "@rollup/plugin-terser";
+import path from "path";
+import { glob } from "glob";
 
+// Get all TypeScript files in src, excluding test files
+const inputFiles = glob.sync("src/**/*.{ts,tsx}", {
+  ignore: ["src/**/*.test.{ts,tsx}", "src/**/*.spec.{ts,tsx}", "**/vitest.setup.ts"],
+});
+
+// Create input object with file names as keys and paths as values
+const input = inputFiles.reduce((acc, file) => {
+  const relativePath = path.relative("src", file);
+  const key = relativePath.replace(path.extname(relativePath), "");
+  acc[key] = file;
+  return acc;
+}, {});
+
+// Base external packages (none for this utils package)
+const external = [];
+
+// Minification configuration
 const minifyOptions = {
   compress: {
     drop_console: true,
     drop_debugger: true,
-    pure_funcs: ['console.log', 'console.info', 'console.debug']
+    pure_funcs: ["console.log", "console.info", "console.debug"],
   },
-  mangle: true
+  mangle: true,
 };
 
-export default [
-  // ESM build - preserve structure
-  {
-    input: 'src/index.ts',
-    output: {
-      dir: 'dist',
-      format: 'esm',
-      entryFileNames: '[name].esm.js',
-      chunkFileNames: '[name]-[hash].esm.js',
-      preserveModules: true,
-      preserveModulesRoot: 'src',
-    },
-    plugins: [
-      resolve(),
-      commonjs(),
-      typescript({
-        tsconfig: './tsconfig.json',
-        declaration: false,
-      }),
-      terser(minifyOptions),
-    ],
-    external: [],
+// CommonJS build
+const cjsConfig = {
+  input,
+  external,
+  output: {
+    dir: "dist",
+    format: "cjs",
+    entryFileNames: "[name].js",
+    chunkFileNames: "[name].js",
+    exports: "named",
+    preserveModules: true,
+    preserveModulesRoot: "src",
+    interop: "auto",
   },
-  // CJS build - preserve structure with ES5 transpilation
-  {
-    input: 'src/index.ts',
-    output: {
-      dir: 'dist',
-      format: 'cjs',
-      entryFileNames: '[name].js',
-      chunkFileNames: '[name]-[hash].js',
-      preserveModules: true,
-      preserveModulesRoot: 'src',
-      exports: 'named',
+  plugins: [
+    typescript({
+      tsconfig: "./tsconfig.json",
+      declaration: true,
+      declarationDir: "dist",
+      rootDir: "src",
+    }),
+    terser(minifyOptions),
+  ],
+};
+
+// ESM build
+const esmConfig = {
+  input,
+  external,
+  output: {
+    dir: "dist",
+    format: "esm",
+    entryFileNames: "[name].esm.js",
+    exports: "named",
+    preserveModules: true,
+    preserveModulesRoot: "src",
+    interop: "auto",
+    generatedCode: {
+      symbols: true,
     },
-    plugins: [
-      resolve(),
-      commonjs(),
-      typescript({
-        tsconfig: './tsconfig.json',
-        declaration: false,
-      }),
-      babel({
-        babelHelpers: 'bundled',
-        presets: [
-          ['@babel/preset-env', {
-            targets: { node: '12' },
-            modules: false,
-          }]
-        ],
-        extensions: ['.js', '.ts'],
-        exclude: 'node_modules/**',
-      }),
-      terser(minifyOptions),
-    ],
-    external: [],
   },
-  // Type definitions - preserve structure
-  {
-    input: 'src/index.ts',
-    output: {
-      dir: 'dist',
-      entryFileNames: '[name].d.ts',
-      format: 'esm',
-      preserveModules: true,
-      preserveModulesRoot: 'src',
-    },
-    plugins: [dts()],
-  },
-];
+  plugins: [
+    typescript({
+      tsconfig: "./tsconfig.json",
+      declaration: false, // Only generate declarations once (in CJS build)
+      declarationDir: undefined,
+      rootDir: "src",
+    }),
+    terser(minifyOptions),
+  ],
+};
+
+export default [cjsConfig, esmConfig];
