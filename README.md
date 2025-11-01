@@ -55,10 +55,10 @@ bun add @mxweb/utils
 - 🚀 **HTTP Client** - Full-featured HTTP client with interceptors, authentication, and file upload support
 - 💾 **Storage Management** - Unified API for localStorage, sessionStorage, and cookies
 - 🔧 **String Utilities** - Case conversion, URI encoding/decoding, template interpolation
-- 📦 **Object Utilities** - Deep flattening for nested objects and arrays
+- 📦 **Object Utilities** - Deep flattening, array conversion, and regex key escaping
 - 📊 **Data Formatting** - Human-readable file size formatting
 - 🌍 **Environment Variables** - Cross-framework environment variable access (React, Next.js, Vite, etc.)
-- ⏱️ **Async Utilities** - Promise-based delay and sleep functions
+- ⏱️ **Async Utilities** - Promise-based delay, sleep functions, automatic retry logic, and rate limiting
 - 📝 **Array Utilities** - Array chunking and batch processing
 - 🔒 **Type-Safe** - Full TypeScript support with comprehensive type definitions
 - 🌐 **Framework Agnostic** - Works with any JavaScript framework or vanilla JS
@@ -89,7 +89,7 @@ import { chunk } from "@mxweb/utils/chunk";
 Here are some quick examples to get you started:
 
 ```typescript
-import { Http, storage, chunk, formatSize, sleep, getEnv } from "@mxweb/utils";
+import { Http, storage, chunk, formatSize, sleep, getEnv, Retry } from "@mxweb/utils";
 
 // 1. HTTP Client - Make API requests
 const http = new Http("https://api.example.com");
@@ -120,8 +120,20 @@ const chunks = chunk(numbers, 3); // [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 // 4. Format Utilities - Human-readable file sizes
 const size = formatSize(1536000); // "1.46 MB"
 
-// 5. Async Utilities - Add delays
+// 5. Async Utilities - Add delays and retry logic
 await sleep(1000); // Wait 1 second
+
+// Retry operations with automatic error handling
+const retry = new Retry({ maxRetries: 3, delay: 1000 });
+const result = await retry.execute(async () => {
+  const response = await fetch("/api/unreliable-endpoint");
+  if (!response.ok) throw new Error("Request failed");
+  return response.json();
+});
+
+// Rate limit API calls
+const limiter = new RateLimiter({ maxRequests: 5, interval: 1000 });
+await limiter.handle(() => fetch("/api/data"));
 
 // 6. Environment Variables - Access env vars across frameworks
 const apiUrl = getEnv("API_URL", "http://localhost:3000");
@@ -129,6 +141,113 @@ const apiUrl = getEnv("API_URL", "http://localhost:3000");
 ```
 
 ## API Reference
+
+### Type Definitions
+
+Common TypeScript type definitions used throughout the library.
+
+#### `ObjectOf<T>`
+
+Generic object type with string keys and values of type T. Supports both `Record` and index signature syntax.
+
+```typescript
+type ObjectOf<T = unknown> =
+  | Record<string, T>
+  | {
+      [key: string]: T;
+    };
+```
+
+**Example:**
+
+```typescript
+import { ObjectOf } from "@mxweb/utils";
+
+const numbers: ObjectOf<number> = { a: 1, b: 2, c: 3 };
+const users: ObjectOf<User> = {
+  user1: { id: 1, name: "John" },
+  user2: { id: 2, name: "Jane" },
+};
+```
+
+#### `Callback<T, Args>`
+
+A synchronous callback function type.
+
+```typescript
+interface Callback<T, Args extends unknown[] = []> {
+  (...args: Args): T;
+}
+```
+
+**Example:**
+
+```typescript
+import { Callback } from "@mxweb/utils";
+
+const add: Callback<number, [number, number]> = (a, b) => a + b;
+const greet: Callback<string, [string]> = (name) => `Hello, ${name}!`;
+```
+
+#### `AsyncCallback<T, Args>`
+
+An asynchronous callback function type that returns a Promise.
+
+```typescript
+interface AsyncCallback<T, Args extends unknown[] = []> {
+  (...args: Args): Promise<T>;
+}
+```
+
+**Example:**
+
+```typescript
+import { AsyncCallback } from "@mxweb/utils";
+
+const fetchUser: AsyncCallback<User, [string]> = async (id) => {
+  const response = await fetch(`/api/users/${id}`);
+  return response.json();
+};
+```
+
+#### `Primitive`
+
+Primitive JavaScript types.
+
+```typescript
+type Primitive = string | number | boolean | null | undefined;
+```
+
+**Example:**
+
+```typescript
+import { Primitive } from "@mxweb/utils";
+
+const values: Primitive[] = ["text", 42, true, null, undefined];
+```
+
+#### `FlattenedPrimitive`
+
+Object with string keys and primitive values. Commonly used for flattened object representations.
+
+```typescript
+type FlattenedPrimitive = Record<string, Primitive>;
+```
+
+**Example:**
+
+```typescript
+import { FlattenedPrimitive } from "@mxweb/utils";
+
+const flatData: FlattenedPrimitive = {
+  "user.name": "John",
+  "user.age": 30,
+  "user.active": true,
+  "user.email": null,
+};
+```
+
+---
 
 ### Array Utilities
 
@@ -350,6 +469,114 @@ import { flattenObject } from "@mxweb/utils";
 
 flattenObject({ user: { name: "John", age: 30 } });
 // Returns: { "user.name": "John", "user.age": 30 }
+```
+
+#### `flattenToArray`
+
+Converts flattened data back into array structure based on a specific path.
+
+```typescript
+function flattenToArray(data: FlattenedPrimitive, path: string): Array<unknown>;
+```
+
+**Parameters:**
+
+- `data: FlattenedPrimitive` - The flattened data object containing dot-notation keys
+- `path: string` - The path prefix to extract and convert to array structure
+
+**Returns:** `Array<unknown>` - An array containing either reconstructed objects (for array data) or key-value pairs (for object data)
+
+**Example:**
+
+```typescript
+import { flattenToArray } from "@mxweb/utils";
+
+// Reconstruct array from flattened data
+const flatData = {
+  "users.[0].name": "John",
+  "users.[0].age": 30,
+  "users.[1].name": "Jane",
+  "users.[1].age": 25,
+  "config.theme": "dark",
+  "config.language": "en",
+};
+
+// Extract array structure
+flattenToArray(flatData, "users");
+// Returns: [
+//   { "name": "John", "age": 30 },
+//   { "name": "Jane", "age": 25 }
+// ]
+
+// Extract object structure as key-value pairs
+flattenToArray(flatData, "config");
+// Returns: [
+//   { key: "theme", value: "dark" },
+//   { key: "language", value: "en" }
+// ]
+
+// No matching path
+flattenToArray(flatData, "nonexistent");
+// Returns: []
+```
+
+#### `escapeRegexKey`
+
+Escapes special regex characters in strings for safe use in RegExp constructor.
+
+```typescript
+function escapeRegexKey(key: string): string;
+```
+
+**Parameters:**
+
+- `key: string` - The string containing characters to escape for regex usage
+
+**Returns:** `string` - The string with special regex characters properly escaped
+
+**Escaped Characters:**
+
+- `.` (dot) → `\.`
+- `[` and `]` (square brackets) → `\[` and `\]`
+- `{` and `}` (curly braces) → `\{` and `\}`
+
+**Example:**
+
+```typescript
+import { escapeRegexKey } from "@mxweb/utils";
+
+// Basic escaping
+escapeRegexKey("user.name"); // "user\.name"
+escapeRegexKey("data[0]"); // "data\[0\]"
+escapeRegexKey("config{env}"); // "config\{env\}"
+
+// Multiple special characters
+escapeRegexKey("path.to[item].{key}"); // "path\.to\[item\]\.{key}"
+
+// Use with RegExp constructor
+const keyToFind = "user.settings[theme]";
+const escapedKey = escapeRegexKey(keyToFind);
+const regex = new RegExp(`^${escapedKey}$`);
+
+regex.test("user.settings[theme]"); // true
+regex.test("user_settings_theme"); // false
+
+// Pattern matching in flattened data
+const flatData = {
+  "api.users[0].profile.name": "John",
+  "api.users[1].profile.name": "Jane",
+  "config.database.host": "localhost",
+};
+
+const pattern = escapeRegexKey("api.users[0]");
+const regex = new RegExp(`^${pattern}`);
+
+Object.keys(flatData).filter((key) => regex.test(key));
+// Returns: ["api.users[0].profile.name"]
+
+// Template variable escaping
+escapeRegexKey("config.{environment}.database.{host}");
+// Returns: "config\.{environment}\.database\.{host}"
 ```
 
 ---
@@ -927,6 +1154,293 @@ async function retryRequest(fn: () => Promise<any>, attempts = 3) {
 }
 ```
 
+#### `Retry`
+
+A utility class for executing functions with automatic retry logic and configurable delays.
+
+```typescript
+class Retry {
+  constructor(options?: RetryOptions);
+  setOptions(options: RetryOptions): Retry;
+  execute<T>(callback: Callback<T> | AsyncCallback<T>): Promise<T>;
+
+  static DEFAULT_DELAY: number;
+}
+
+interface RetryOptions {
+  maxRetries?: number; // Maximum number of retry attempts (default: 1)
+  delay?: number; // Delay between retries in milliseconds (default: 1500)
+}
+```
+
+**Parameters:**
+
+- `options: RetryOptions` - Configuration options for retry behavior
+
+**Methods:**
+
+##### `setOptions(options: RetryOptions): Retry`
+
+Updates the retry configuration options and returns the instance for method chaining.
+
+##### `execute<T>(callback: Callback<T> | AsyncCallback<T>): Promise<T>`
+
+Executes a function with automatic retry logic on failure.
+
+- `callback` - The function to execute (can be sync or async)
+- Returns: Promise that resolves to the callback's return value
+- Throws: Error when maximum retries are reached
+
+**Examples:**
+
+```typescript
+import { Retry } from "@mxweb/utils";
+
+// Basic retry with default options (1 retry, 1500ms delay)
+const retry = new Retry();
+const result = await retry.execute(() => fetchData());
+
+// Custom retry configuration
+const retry = new Retry({ maxRetries: 3, delay: 1000 });
+
+// Network request with retry
+const data = await retry.execute(async () => {
+  const response = await fetch("/api/data");
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  }
+  return response.json();
+});
+
+// Database operation with retry
+const user = await retry.execute(async () => {
+  return await database.users.findById(userId);
+});
+
+// File operation with retry
+const fileContent = await retry.execute(() => {
+  return fs.readFileSync(filePath, "utf8");
+});
+
+// Method chaining
+const result = await new Retry()
+  .setOptions({ maxRetries: 5, delay: 2000 })
+  .execute(() => unreliableOperation());
+
+// Error handling
+try {
+  await retry.execute(() => {
+    throw new Error("This will fail");
+  });
+} catch (error) {
+  console.error("All retries failed:", error.message);
+  // Output: "| Mailer Retry > Max retries reached (3): This will fail"
+}
+
+// Real-world example: API with exponential backoff
+class ApiClient {
+  private retry = new Retry({ maxRetries: 3, delay: 1000 });
+
+  async get(url: string) {
+    return this.retry.execute(async () => {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+      }
+      return response.json();
+    });
+  }
+
+  async post(url: string, data: any) {
+    return this.retry.execute(async () => {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+      }
+      return response.json();
+    });
+  }
+}
+
+// Usage with different retry strategies
+const quickRetry = new Retry({ maxRetries: 2, delay: 500 });
+const patientRetry = new Retry({ maxRetries: 5, delay: 3000 });
+
+// Quick operations
+const cache = await quickRetry.execute(() => redis.get(key));
+
+// Critical operations that need more patience
+const payment = await patientRetry.execute(() => processPayment(order));
+```
+
+#### `RateLimiter`
+
+A rate limiter that controls the frequency of function execution. Ensures that callbacks are executed within specified rate limits by queueing requests and enforcing delays between executions.
+
+```typescript
+class RateLimiter {
+  constructor(options: RateLimitOptions);
+  setOptions(options: RateLimitOptions): RateLimiter;
+  handle<T>(callback: Callback<T>): Promise<T>;
+
+  static DEFAULT_DELAY: number; // 1500ms
+  static DEFAULT_MAX_REQUESTS: number; // 1
+}
+
+interface RateLimitOptions {
+  maxRequests?: number; // Maximum requests allowed per interval (default: 1)
+  interval?: number; // Time interval in milliseconds (default: 1500)
+}
+```
+
+**Parameters:**
+
+- `options: RateLimitOptions` - Configuration options for rate limiting behavior
+
+**Methods:**
+
+##### `setOptions(options: RateLimitOptions): RateLimiter`
+
+Updates the rate limiter configuration options and returns the instance for method chaining.
+
+##### `handle<T>(callback: Callback<T>): Promise<T>`
+
+Executes a function with rate limiting. The callback is queued and executed when rate limits allow.
+
+- `callback` - The function to execute (can be sync or async)
+- Returns: Promise that resolves to the callback's return value
+- Throws: Any error thrown by the callback
+
+**Examples:**
+
+```typescript
+import { RateLimiter } from "@mxweb/utils";
+
+// Basic rate limiter - 5 requests per second
+const limiter = new RateLimiter({
+  maxRequests: 5,
+  interval: 1000,
+});
+
+// Execute rate-limited requests
+for (let i = 0; i < 10; i++) {
+  limiter.handle(async () => {
+    console.log(`Request ${i + 1}`);
+    return fetch(`/api/data/${i}`);
+  });
+}
+
+// API rate limiting
+const apiLimiter = new RateLimiter({ maxRequests: 3, interval: 2000 });
+
+const results = await Promise.all([
+  apiLimiter.handle(() => fetch("/api/users")),
+  apiLimiter.handle(() => fetch("/api/posts")),
+  apiLimiter.handle(() => fetch("/api/comments")),
+  apiLimiter.handle(() => fetch("/api/likes")), // Will wait for rate limit
+]);
+
+// Database query rate limiting
+const dbLimiter = new RateLimiter({ maxRequests: 10, interval: 1000 });
+
+const users = await Promise.all(
+  userIds.map((id) => dbLimiter.handle(() => database.users.findById(id)))
+);
+
+// Method chaining
+const result = await new RateLimiter({ maxRequests: 2, interval: 1000 })
+  .setOptions({ maxRequests: 5, interval: 500 })
+  .handle(() => fetch("/api/data"));
+
+// File download rate limiting
+const downloadLimiter = new RateLimiter({ maxRequests: 2, interval: 1500 });
+
+async function downloadFile(url: string) {
+  return downloadLimiter.handle(async () => {
+    const response = await fetch(url);
+    return response.blob();
+  });
+}
+
+// Real-world example: Third-party API client with rate limits
+class ThirdPartyApiClient {
+  private limiter = new RateLimiter({ maxRequests: 10, interval: 1000 });
+
+  async get(endpoint: string) {
+    return this.limiter.handle(async () => {
+      const response = await fetch(`https://api.example.com${endpoint}`);
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+      }
+      return response.json();
+    });
+  }
+
+  async post(endpoint: string, data: any) {
+    return this.limiter.handle(async () => {
+      const response = await fetch(`https://api.example.com${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+      }
+      return response.json();
+    });
+  }
+
+  // Update rate limits dynamically
+  setRateLimit(maxRequests: number, interval: number) {
+    this.limiter.setOptions({ maxRequests, interval });
+  }
+}
+
+// Batch processing with rate limiting
+const batchLimiter = new RateLimiter({ maxRequests: 5, interval: 2000 });
+
+async function processBatch(items: any[]) {
+  const results = await Promise.all(
+    items.map((item) =>
+      batchLimiter.handle(async () => {
+        // Process each item
+        return await processItem(item);
+      })
+    )
+  );
+  return results;
+}
+
+// Combining with Retry for robust API calls
+const limiter = new RateLimiter({ maxRequests: 5, interval: 1000 });
+const retry = new Retry({ maxRetries: 3, delay: 1000 });
+
+async function robustApiCall(url: string) {
+  return limiter.handle(() =>
+    retry.execute(async () => {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.json();
+    })
+  );
+}
+
+// Different rate limits for different priority levels
+const highPriorityLimiter = new RateLimiter({ maxRequests: 10, interval: 1000 });
+const lowPriorityLimiter = new RateLimiter({ maxRequests: 2, interval: 1000 });
+
+async function fetchWithPriority(url: string, priority: "high" | "low") {
+  const limiter = priority === "high" ? highPriorityLimiter : lowPriorityLimiter;
+  return limiter.handle(() => fetch(url));
+}
+```
+
+---
+
 ## Examples
 
 ### Basic Examples
@@ -942,6 +1456,8 @@ import {
   interpolate,
   flatten,
   getEnv,
+  Retry,
+  RateLimiter,
 } from "@mxweb/utils";
 
 // HTTP Client
@@ -970,6 +1486,14 @@ formatSize(1048576); // '1 MB'
 
 // Async utilities
 await sleep(1000); // Wait 1 second
+
+// Retry utilities
+const retry = new Retry({ maxRetries: 3, delay: 1000 });
+await retry.execute(() => unreliableOperation());
+
+// Rate limiting
+const limiter = new RateLimiter({ maxRequests: 5, interval: 1000 });
+await limiter.handle(() => apiCall());
 
 // Environment variables
 const apiUrl = getEnv("API_URL", "https://api.example.com");
@@ -1326,51 +1850,15 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## License
 
-MIT License
-
-Copyright (c) 2024 MXWeb
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Changelog
 
-### [0.0.1] - 2025-10-31
-
-#### Added
-
-- Initial release of `@mxweb/utils`
-- HTTP client with Fetch API and XMLHttpRequest support
-- Type-safe API client with `createInfer`
-- Storage utilities (localStorage, sessionStorage, cookies)
-- Array utilities (`chunk`, `flatten`)
-- String utilities (`pascalToKebab`, `interpolate`)
-- Object utilities (`flatten`)
-- File/Format utilities (`formatSize`)
-- Environment variable utilities (`getEnv`)
-- Async utilities (`sleep`)
-- Full TypeScript support
-- Request/response/error interceptors
-- File upload with progress tracking
+See [CHANGELOG.md](CHANGELOG.md) for a detailed list of changes in each version.
 
 ## Authors
 
-- **MXWeb Team** - [MXWeb](https://github.com/mxwebio)
+- **MxWeb Team** - [MxWeb.io](https://github.com/mxwebio)
 
 ## Acknowledgments
 
