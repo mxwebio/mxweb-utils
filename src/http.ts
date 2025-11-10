@@ -1081,7 +1081,7 @@ export class Http {
 
     return function infer<T, Args extends any[] = [], E = unknown>(
       key: string,
-      method: HttpMethod | "UPLOAD"
+      method?: HttpMethod | "UPLOAD"
     ): HttpInfer<T, Args, E> {
       const url = urls[key] as string;
 
