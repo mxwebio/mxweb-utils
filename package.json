@@ -1,10 +1,9 @@
 {
   "name": "@mxweb/utils",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A comprehensive collection of TypeScript utilities for modern web development",
-  "type": "module",
   "main": "dist/index.js",
-  "module": "dist/index.esm.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "license": "MIT",
   "author": "MXWeb Team <contact@mxweb.io>",
@@ -89,87 +88,99 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.esm.js",
+      "import": "./dist/index.mjs",
       "require": "./dist/index.js",
-      "default": "./dist/index.esm.js"
+      "default": "./dist/index.mjs"
     },
     "./chunk": {
       "types": "./dist/chunk.d.ts",
-      "import": "./dist/chunk.esm.js",
+      "import": "./dist/chunk.mjs",
       "require": "./dist/chunk.js",
-      "default": "./dist/chunk.esm.js"
+      "default": "./dist/chunk.mjs"
     },
     "./flatten": {
       "types": "./dist/flatten.d.ts",
-      "import": "./dist/flatten.esm.js",
+      "import": "./dist/flatten.mjs",
       "require": "./dist/flatten.js",
-      "default": "./dist/flatten.esm.js"
+      "default": "./dist/flatten.mjs"
     },
     "./format-size": {
       "types": "./dist/format-size.d.ts",
-      "import": "./dist/format-size.esm.js",
+      "import": "./dist/format-size.mjs",
       "require": "./dist/format-size.js",
-      "default": "./dist/format-size.esm.js"
+      "default": "./dist/format-size.mjs"
     },
     "./get-env": {
       "types": "./dist/get-env.d.ts",
-      "import": "./dist/get-env.esm.js",
+      "import": "./dist/get-env.mjs",
       "require": "./dist/get-env.js",
-      "default": "./dist/get-env.esm.js"
+      "default": "./dist/get-env.mjs"
+    },
+    "./get-settled-value": {
+      "types": "./dist/get-settled-value.d.ts",
+      "import": "./dist/get-settled-value.mjs",
+      "require": "./dist/get-settled-value.js",
+      "default": "./dist/get-settled-value.mjs"
     },
     "./http": {
       "types": "./dist/http.d.ts",
-      "import": "./dist/http.esm.js",
+      "import": "./dist/http.mjs",
       "require": "./dist/http.js",
-      "default": "./dist/http.esm.js"
+      "default": "./dist/http.mjs"
     },
     "./interpolate": {
       "types": "./dist/interpolate.d.ts",
-      "import": "./dist/interpolate.esm.js",
+      "import": "./dist/interpolate.mjs",
       "require": "./dist/interpolate.js",
-      "default": "./dist/interpolate.esm.js"
+      "default": "./dist/interpolate.mjs"
     },
     "./pascal-to-kebab": {
       "types": "./dist/pascal-to-kebab.d.ts",
-      "import": "./dist/pascal-to-kebab.esm.js",
+      "import": "./dist/pascal-to-kebab.mjs",
       "require": "./dist/pascal-to-kebab.js",
-      "default": "./dist/pascal-to-kebab.esm.js"
+      "default": "./dist/pascal-to-kebab.mjs"
     },
     "./rate-limiter": {
       "types": "./dist/rate-limiter.d.ts",
-      "import": "./dist/rate-limiter.esm.js",
+      "import": "./dist/rate-limiter.mjs",
       "require": "./dist/rate-limiter.js",
-      "default": "./dist/rate-limiter.esm.js"
+      "default": "./dist/rate-limiter.mjs"
+    },
+    "./request-timeout": {
+      "types": "./dist/request-timeout.d.ts",
+      "import": "./dist/request-timeout.mjs",
+      "require": "./dist/request-timeout.js",
+      "default": "./dist/request-timeout.mjs"
     },
     "./retry": {
       "types": "./dist/retry.d.ts",
-      "import": "./dist/retry.esm.js",
+      "import": "./dist/retry.mjs",
       "require": "./dist/retry.js",
-      "default": "./dist/retry.esm.js"
+      "default": "./dist/retry.mjs"
     },
     "./sleep": {
       "types": "./dist/sleep.d.ts",
-      "import": "./dist/sleep.esm.js",
+      "import": "./dist/sleep.mjs",
       "require": "./dist/sleep.js",
-      "default": "./dist/sleep.esm.js"
+      "default": "./dist/sleep.mjs"
     },
     "./storage": {
       "types": "./dist/storage.d.ts",
-      "import": "./dist/storage.esm.js",
+      "import": "./dist/storage.mjs",
       "require": "./dist/storage.js",
-      "default": "./dist/storage.esm.js"
+      "default": "./dist/storage.mjs"
     },
     "./uri": {
       "types": "./dist/uri.d.ts",
-      "import": "./dist/uri.esm.js",
+      "import": "./dist/uri.mjs",
       "require": "./dist/uri.js",
-      "default": "./dist/uri.esm.js"
+      "default": "./dist/uri.mjs"
     },
     "./types": {
       "types": "./dist/types.d.ts",
-      "import": "./dist/types.esm.js",
+      "import": "./dist/types.mjs",
       "require": "./dist/types.js",
-      "default": "./dist/types.esm.js"
+      "default": "./dist/types.mjs"
     },
     "./package.json": "./package.json"
   }
