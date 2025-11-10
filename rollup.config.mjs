@@ -61,7 +61,7 @@ const esmConfig = {
   output: {
     dir: "dist",
     format: "esm",
-    entryFileNames: "[name].esm.js",
+    entryFileNames: "[name].mjs",
     exports: "named",
     preserveModules: true,
     preserveModulesRoot: "src",
