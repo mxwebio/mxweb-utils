@@ -1,12 +1,12 @@
 {
   "name": "@mxweb/utils",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A comprehensive collection of TypeScript utilities for modern web development",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "license": "MIT",
-  "author": "MXWeb Team <contact@mxweb.io>",
+  "author": "MXWeb Team <mxwebio@gmail.com>",
   "homepage": "https://github.com/mxwebio/mxweb-utils#readme",
   "repository": {
     "type": "git",
@@ -18,13 +18,11 @@
   "keywords": [
     "utilities",
     "typescript",
-    "http",
     "storage",
     "helpers",
     "utils",
     "lodash",
     "axios",
-    "fetch",
     "localStorage",
     "sessionStorage",
     "cookies",
@@ -58,7 +56,7 @@
     "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,json,md}\"",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "yarn build"
   },
   "devDependencies": {
     "@babel/core": "^7.28.5",
@@ -121,12 +119,6 @@
       "import": "./dist/get-settled-value.mjs",
       "require": "./dist/get-settled-value.js",
       "default": "./dist/get-settled-value.mjs"
-    },
-    "./http": {
-      "types": "./dist/http.d.ts",
-      "import": "./dist/http.mjs",
-      "require": "./dist/http.js",
-      "default": "./dist/http.mjs"
     },
     "./interpolate": {
       "types": "./dist/interpolate.d.ts",
