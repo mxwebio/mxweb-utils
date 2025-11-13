@@ -3,7 +3,6 @@ export * from "./flatten";
 export * from "./format-size";
 export * from "./get-env";
 export * from "./get-settled-value";
-export * from "./http";
 export * from "./interpolate";
 export * from "./pascal-to-kebab";
 export * from "./rate-limiter";
