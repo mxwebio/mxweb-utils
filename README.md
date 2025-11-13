@@ -18,7 +18,6 @@ A comprehensive collection of TypeScript utilities for modern web development, p
   - [String Utilities](#string-utilities)
   - [Object Utilities](#object-utilities)
   - [File & Format Utilities](#file--format-utilities)
-  - [HTTP Client](#http-client)
   - [Storage Utilities](#storage-utilities)
   - [Environment Variables](#environment-variables)
   - [Async Utilities](#async-utilities)
@@ -52,7 +51,6 @@ bun add @mxweb/utils
 
 ## Features
 
-- 🚀 **HTTP Client** - Full-featured HTTP client with interceptors, authentication, and file upload support
 - 💾 **Storage Management** - Unified API for localStorage, sessionStorage, and cookies
 - 🔧 **String Utilities** - Case conversion, URI encoding/decoding, template interpolation
 - 📦 **Object Utilities** - Deep flattening, array conversion, and regex key escaping
@@ -76,10 +74,9 @@ You can import utilities in multiple ways:
 import * as utils from "@mxweb/utils";
 
 // Import specific utilities
-import { Http, storage, chunk, formatSize } from "@mxweb/utils";
+import { storage, chunk, formatSize } from "@mxweb/utils";
 
 // Import from specific modules
-import { Http } from "@mxweb/utils/http";
 import { storage } from "@mxweb/utils/storage";
 import { chunk } from "@mxweb/utils/chunk";
 ```
@@ -89,38 +86,23 @@ import { chunk } from "@mxweb/utils/chunk";
 Here are some quick examples to get you started:
 
 ```typescript
-import { Http, storage, chunk, formatSize, sleep, getEnv, Retry } from "@mxweb/utils";
+import { storage, chunk, formatSize, sleep, getEnv, Retry } from "@mxweb/utils";
 
-// 1. HTTP Client - Make API requests
-const http = new Http("https://api.example.com");
-
-// GET request
-const { data, success } = await http.get("/users");
-
-// POST request
-await http.post("/users", { name: "John Doe", email: "john@example.com" });
-
-// Upload file with progress
-await http.upload("/upload", file, {
-  name: "document",
-  onProgress: (progress) => console.log(`${progress.percentage}%`),
-});
-
-// 2. Storage - Manage localStorage, sessionStorage, cookies
+// 1. Storage - Manage localStorage, sessionStorage, cookies
 // Save data
 storage.local.setItem("user", { id: 1, name: "John" });
 
 // Retrieve data with type safety
 const user = storage.local.getItem<{ id: number; name: string }>("user");
 
-// 3. Array Utilities - Split arrays into chunks
+// 2. Array Utilities - Split arrays into chunks
 const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 const chunks = chunk(numbers, 3); // [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 
-// 4. Format Utilities - Human-readable file sizes
+// 3. Format Utilities - Human-readable file sizes
 const size = formatSize(1536000); // "1.46 MB"
 
-// 5. Async Utilities - Add delays and retry logic
+// 4. Async Utilities - Add delays and retry logic
 await sleep(1000); // Wait 1 second
 
 // Retry operations with automatic error handling
@@ -135,10 +117,12 @@ const result = await retry.execute(async () => {
 const limiter = new RateLimiter({ maxRequests: 5, interval: 1000 });
 await limiter.handle(() => fetch("/api/data"));
 
-// 6. Environment Variables - Access env vars across frameworks
+// 5. Environment Variables - Access env vars across frameworks
 const apiUrl = getEnv("API_URL", "http://localhost:3000");
 // Automatically checks: API_URL, REACT_APP_API_URL, NEXT_PUBLIC_API_URL, VITE_API_URL, etc.
 ```
+
+> **Note:** Looking for HTTP client? It has been moved to [`@mxweb/http`](https://npmjs.com/package/@mxweb/http) package for better modularity and smaller bundle sizes.
 
 ## API Reference
 
@@ -611,390 +595,6 @@ formatSize(2457600); // "2.34 MB"
 
 ---
 
-### HTTP Client
-
-#### `Http`
-
-Full-featured HTTP client with interceptors, authentication, and file upload support.
-
-##### Constructor
-
-```typescript
-new Http(baseURL?: string)
-```
-
-**Parameters:**
-
-- `baseURL: string` - Base URL for all requests (default: from `API_URL` env var or "/")
-
-**Example:**
-
-```typescript
-import { Http } from "@mxweb/utils";
-
-const http = new Http("https://api.example.com");
-```
-
-##### Instance Methods
-
-###### `get`
-
-Makes a GET request.
-
-```typescript
-get<T = unknown, Query = Record<string, unknown>, E = unknown>(
-  url: string,
-  query?: Query,
-  options?: { headers?, params?, signal? }
-): Promise<HttpResponse<T, E>>
-```
-
-**Example:**
-
-```typescript
-const { data, success, status } = await http.get<User[]>("/users");
-const response = await http.get("/search", { q: "keyword", page: 1 });
-```
-
-###### `post`
-
-Makes a POST request.
-
-```typescript
-post<T = unknown, Body = unknown, E = unknown>(
-  url: string,
-  body?: Body,
-  options?: { headers?, params?, signal?, query? }
-): Promise<HttpResponse<T, E>>
-```
-
-**Example:**
-
-```typescript
-const response = await http.post<User>("/users", {
-  name: "John Doe",
-  email: "john@example.com",
-});
-```
-
-###### `put`
-
-Makes a PUT request.
-
-```typescript
-put<T = unknown, Body = unknown, E = unknown>(
-  url: string,
-  body?: Body,
-  options?: { headers?, params?, signal?, query? }
-): Promise<HttpResponse<T, E>>
-```
-
-**Example:**
-
-```typescript
-await http.put(
-  "/users/{id}",
-  { name: "John Updated" },
-  {
-    params: { id: 123 },
-  }
-);
-```
-
-###### `patch`
-
-Makes a PATCH request.
-
-```typescript
-patch<T = unknown, Body = unknown, E = unknown>(
-  url: string,
-  body?: Body,
-  options?: { headers?, params?, signal?, query? }
-): Promise<HttpResponse<T, E>>
-```
-
-**Example:**
-
-```typescript
-await http.patch(
-  "/users/{id}",
-  { email: "newemail@example.com" },
-  {
-    params: { id: 123 },
-  }
-);
-```
-
-###### `delete`
-
-Makes a DELETE request.
-
-```typescript
-delete<T = unknown, E = unknown>(
-  url: string,
-  options?: { headers?, params?, signal?, query? }
-): Promise<HttpResponse<T, E>>
-```
-
-**Example:**
-
-```typescript
-await http.delete("/users/{id}", { params: { id: 123 } });
-```
-
-###### `head`
-
-Makes a HEAD request.
-
-```typescript
-head<T = unknown, E = unknown>(
-  url: string,
-  options?: { headers?, params?, signal?, query? }
-): Promise<HttpResponse<T, E>>
-```
-
-###### `options`
-
-Makes an OPTIONS request.
-
-```typescript
-options<T = unknown, E = unknown>(
-  url: string,
-  options?: { headers?, params?, signal?, query? }
-): Promise<HttpResponse<T, E>>
-```
-
-###### `upload`
-
-Uploads files with optional progress tracking.
-
-```typescript
-upload<T = unknown, E = unknown>(
-  url: string,
-  file: File | File[] | FileList,
-  options?: HttpUploadOptions
-): Promise<HttpResponse<T, E>>
-```
-
-**Example:**
-
-```typescript
-const file = input.files[0];
-
-await http.upload("/upload", file, {
-  name: "document",
-  onProgress: (progress) => {
-    console.log(`${progress.percentage}%`);
-  },
-  body: { userId: 123 },
-});
-
-// Multiple files
-await http.upload("/upload", input.files, {
-  name: "files[]",
-});
-```
-
-###### `on` / `off`
-
-Registers or removes interceptors for this instance.
-
-```typescript
-on(type: 'request' | 'response' | 'error', handler: Function): Http
-off(type: 'request' | 'response' | 'error', handler: Function): Http
-```
-
-**Example:**
-
-```typescript
-http.on("request", async (options) => {
-  console.log("Request:", options.url);
-  return options;
-});
-
-http.on("response", async (response) => {
-  console.log("Response:", response.status);
-  return response;
-});
-
-http.on("error", async (error) => {
-  console.error("Error:", error);
-});
-```
-
-###### `addHeaders`
-
-Adds default headers to all requests.
-
-```typescript
-addHeaders(headers: Record<string, string>): void
-```
-
-**Example:**
-
-```typescript
-http.addHeaders({
-  "X-Custom-Header": "value",
-  "X-API-Version": "2.0",
-});
-```
-
-###### `setStorage`
-
-Sets the storage implementation for authentication tokens.
-
-```typescript
-setStorage(storage: HttpStorage): void
-```
-
-**Example:**
-
-```typescript
-http.setStorage(storage.local);
-```
-
-##### Static Methods
-
-###### `Http.on` / `Http.off`
-
-Registers or removes global interceptors for all Http instances.
-
-```typescript
-static on(type: 'request' | 'response' | 'error', handler: Function): void
-static off(type: 'request' | 'response' | 'error', handler: Function): void
-```
-
-**Example:**
-
-```typescript
-// Global request interceptor
-Http.on("request", async (options) => {
-  options.headers = { ...options.headers, "X-Timestamp": Date.now() };
-  return options;
-});
-```
-
-###### `Http.createInfer`
-
-Creates a factory function for generating type-safe API endpoint functions.
-
-```typescript
-static createInfer(options?: HttpInferOptions): InferFunction
-```
-
-**Example:**
-
-```typescript
-const endpoints = {
-  "user.list": "/api/users",
-  "user.get": "/api/users/{id}",
-  "user.create": "/api/users",
-};
-
-const infer = Http.createInfer({
-  baseURL: "https://api.example.com",
-  endpoint: endpoints,
-});
-
-const getUsers = infer<User[]>("user.list", HttpMethod.GET);
-const createUser = infer<User, [UserInput]>("user.create", HttpMethod.POST);
-
-// Use the generated functions
-const { data: users } = await getUsers.fn();
-const { data: newUser } = await createUser.fn({ name: "John" });
-```
-
-##### Types & Interfaces
-
-###### `HttpMethod`
-
-Enum of supported HTTP methods.
-
-```typescript
-enum HttpMethod {
-  GET = "GET",
-  POST = "POST",
-  PUT = "PUT",
-  DELETE = "DELETE",
-  PATCH = "PATCH",
-  HEAD = "HEAD",
-  OPTIONS = "OPTIONS",
-}
-```
-
-###### `HttpRequest`
-
-Configuration options for an HTTP request.
-
-```typescript
-interface HttpRequest<Body, Params, Query, Headers> {
-  method: HttpMethod;
-  url: string;
-  headers?: Headers;
-  body?: Body;
-  query?: Query;
-  params?: Params;
-  signal?: AbortSignal;
-}
-```
-
-###### `HttpResponse`
-
-Standardized HTTP response structure.
-
-```typescript
-interface HttpResponse<T, E> {
-  success: boolean;
-  data: T;
-  status: number;
-  statusText: string;
-  headers: Record<string, string>;
-  error: E | null;
-}
-```
-
-###### `HttpStorage`
-
-Interface for storage implementations.
-
-```typescript
-interface HttpStorage {
-  getItem(key: string): string | null;
-  setItem(key: string, value: string): void;
-  removeItem(key: string, options?: any): void;
-}
-```
-
-###### `HttpUploadOptions`
-
-Configuration options for file uploads.
-
-```typescript
-interface HttpUploadOptions {
-  name: string;
-  onProgress?: (progress: HttpProgress) => void;
-  body?: Record<string, unknown>;
-  headers?: Record<string, string>;
-  params?: Record<string, unknown>;
-  signal?: AbortSignal;
-  query?: HttpQuery;
-}
-```
-
-###### `HttpProgress`
-
-Progress information for file uploads.
-
-```typescript
-interface HttpProgress {
-  loaded: number;
-  total: number;
-  percentage: number;
-}
-```
-
----
-
 ### Storage Utilities
 
 #### `storage`
@@ -1447,7 +1047,6 @@ async function fetchWithPriority(url: string, priority: "high" | "low") {
 
 ```typescript
 import {
-  Http,
   storage,
   chunk,
   formatSize,
@@ -1459,11 +1058,6 @@ import {
   Retry,
   RateLimiter,
 } from "@mxweb/utils";
-
-// HTTP Client
-const http = new Http("https://api.example.com");
-const { data } = await http.get("/users");
-await http.post("/users", { name: "John" });
 
 // Storage
 storage.local.setItem("user", { id: 1, name: "John" });
@@ -1499,98 +1093,6 @@ await limiter.handle(() => apiCall());
 const apiUrl = getEnv("API_URL", "https://api.example.com");
 ```
 
-### HTTP Client Examples
-
-#### Type-Safe API with `createInfer`
-
-```typescript
-import { Http, HttpMethod } from "@mxweb/utils";
-
-const endpoints = {
-  "user.list": "/users",
-  "user.get": "/users/{id}",
-  "user.create": "/users",
-} as const;
-
-const infer = Http.createInfer({
-  baseURL: "https://api.example.com",
-  endpoint: endpoints,
-});
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-}
-
-const api = {
-  user: {
-    list: infer<User[]>("user.list", HttpMethod.GET),
-    get: infer<User, [{ params: { id: number } }]>("user.get", HttpMethod.GET),
-    create: infer<User, [{ name: string; email: string }]>("user.create", HttpMethod.POST),
-  },
-};
-
-// Usage
-const users = await api.user.list.fn();
-const user = await api.user.get.fn({ params: { id: 1 } });
-const newUser = await api.user.create.fn({ name: "John", email: "john@example.com" });
-```
-
-#### Server-Side Actions (Next.js)
-
-```typescript
-// lib/api/server-client.ts
-'use server';
-import { Http, HttpMethod } from '@mxweb/utils';
-import { getEnv } from '@mxweb/utils';
-
-const serverHttp = new Http(getEnv('INTERNAL_API_URL'));
-serverHttp.addHeaders({
-  'X-API-Key': getEnv('API_SECRET_KEY', ''),
-});
-
-const endpoints = {
-  'user.list': '/users',
-  'user.get': '/users/{id}',
-};
-
-const infer = Http.createInfer({
-  http: serverHttp,
-  endpoint: endpoints
-});
-
-export const serverApi = {
-  user: {
-    list: infer<User[]>('user.list', HttpMethod.GET),
-    get: infer<User, [{ params: { id: number } }]>('user.get', HttpMethod.GET),
-  },
-};
-
-// app/actions/user.actions.ts
-'use server';
-import { serverApi } from '@/lib/api/server-client';
-
-export async function getUsersAction() {
-  const response = await serverApi.user.list.fn();
-  return response.data;
-}
-
-// app/users/page.tsx
-'use client';
-import { getUsersAction } from '@/app/actions/user.actions';
-
-export default function UsersPage() {
-  const [users, setUsers] = useState([]);
-
-  useEffect(() => {
-    getUsersAction().then(setUsers);
-  }, []);
-
-  return <div>{/* Render users */}</div>;
-}
-```
-
 ### Storage Examples
 
 ```typescript
@@ -1621,87 +1123,6 @@ storage.cookie.setItem("access_token", "token123");
 const token = storage.cookie.getItem<string>("access_token");
 ```
 
-### Advanced Usage
-
-#### API Client with Interceptors
-
-```typescript
-import { Http, storage, sleep } from "@mxweb/utils";
-
-class ApiClient {
-  private http: Http;
-
-  constructor(baseURL: string) {
-    this.http = new Http(baseURL);
-    this.http.setStorage(storage.local);
-    this.setupInterceptors();
-  }
-
-  private setupInterceptors() {
-    // Add auth token
-    this.http.on("request", async (options) => {
-      const token = storage.local.getItem<string>("access_token");
-      if (token) {
-        options.headers = {
-          ...options.headers,
-          Authorization: `Bearer ${token}`,
-        };
-      }
-      return options;
-    });
-
-    // Handle token refresh
-    this.http.on("response", async (response) => {
-      if (response.status === 401) {
-        const newToken = await this.refreshToken();
-        if (newToken) {
-          response.config.headers["Authorization"] = `Bearer ${newToken}`;
-          return await this.http.request(response.config);
-        }
-      }
-      return response;
-    });
-
-    // Retry on error
-    this.http.on("error", async (error) => {
-      if (!error.retryCount) error.retryCount = 0;
-      if (error.retryCount < 3) {
-        error.retryCount++;
-        await sleep(1000 * error.retryCount);
-        return await this.http.request(error.config);
-      }
-      return error;
-    });
-  }
-
-  private async refreshToken(): Promise<string | null> {
-    const refreshToken = storage.local.getItem<string>("refresh_token");
-    if (!refreshToken) return null;
-
-    const response = await this.http.post<{ accessToken: string }>("/auth/refresh", {
-      refreshToken,
-    });
-    if (response.success) {
-      storage.local.setItem("access_token", response.data.accessToken);
-      return response.data.accessToken;
-    }
-    return null;
-  }
-
-  async get<T>(url: string, query?: any) {
-    return this.http.get<T>(url, query);
-  }
-
-  async post<T>(url: string, body?: any) {
-    return this.http.post<T>(url, body);
-  }
-}
-
-// Usage
-const api = new ApiClient("https://api.example.com");
-const users = await api.get("/users");
-```
-
 ## Configuration
 
 ### Environment Variables
@@ -1723,82 +1144,18 @@ const config = {
 };
 ```
 
-### Authentication
-
-```typescript
-import { Http, storage } from "@mxweb/utils";
-
-const http = new Http("https://api.example.com");
-http.setStorage(storage.local);
-
-// Request interceptor - add auth token
-http.on("request", async (options) => {
-  const token = storage.local.getItem<string>("access_token");
-  if (token) {
-    options.headers = { ...options.headers, Authorization: `Bearer ${token}` };
-  }
-  return options;
-});
-
-// Response interceptor - handle 401
-http.on("response", async (response) => {
-  if (response.status === 401) {
-    // Refresh token or redirect to login
-  }
-  return response;
-});
-```
-
-### Interceptors
-
-```typescript
-import { Http, sleep } from "@mxweb/utils";
-
-const http = new Http("https://api.example.com");
-
-// Request interceptor
-http.on("request", async (options) => {
-  options.headers = {
-    ...options.headers,
-    "X-Request-ID": `req_${Date.now()}`,
-  };
-  return options;
-});
-
-// Response interceptor
-http.on("response", async (response) => {
-  console.log(`Response: ${response.status}`);
-  return response;
-});
-
-// Error interceptor with retry
-http.on("error", async (error) => {
-  if (!error.retryCount) error.retryCount = 0;
-  if (error.retryCount < 3) {
-    error.retryCount++;
-    await sleep(1000 * error.retryCount);
-    return await http.request(error.config);
-  }
-  return error;
-});
-```
-
 ## TypeScript Support
 
 `@mxweb/utils` is written in TypeScript and provides full type safety with comprehensive type definitions for all utilities.
 
 ```typescript
-import { Http, storage, chunk } from "@mxweb/utils";
+import { storage, chunk } from "@mxweb/utils";
 
 // Generic types
 interface User {
   id: number;
   name: string;
 }
-
-const http = new Http("https://api.example.com");
-const response = await http.get<User[]>("/users");
-response.data; // Type: User[] | undefined
 
 // Storage with types
 storage.local.setItem<User>("user", { id: 1, name: "John" });

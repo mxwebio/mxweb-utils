@@ -5,6 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.4] - 2025-11-13
+
+### Removed
+
+- **HTTP Client** - Moved to separate package [`@mxweb/http`](https://npmjs.com/package/@mxweb/http) v1.0.0
+  - The `Http` class and all HTTP-related utilities have been extracted to `@mxweb/http`
+  - This change reduces bundle size for users who don't need HTTP client functionality
+  - Users who need HTTP features should install `@mxweb/http` separately
+  - See [Migration Guide](#migration-from-003-to-004) below for upgrade instructions
+
+### Changed
+
+- Package now focuses on core utilities only (array, string, object, storage, async, environment)
+- Reduced package size by ~40% after removing HTTP client
+- Updated exports to remove HTTP-related modules
+
+### Migration from 0.0.3 to 0.0.4
+
+If you were using the HTTP client:
+
+```bash
+# Install the new HTTP package
+npm install @mxweb/http
+```
+
+```typescript
+// Before (v0.0.3)
+import { Http } from "@mxweb/utils";
+
+// After (v0.0.4)
+import { Http } from "@mxweb/http";
+
+// Everything else remains the same
+const http = new Http("https://api.example.com");
+```
+
+If you were NOT using the HTTP client, no changes needed - just upgrade and enjoy the smaller bundle size!
+
 ## [0.0.3] - 2025-11-10
 
 ### Added
