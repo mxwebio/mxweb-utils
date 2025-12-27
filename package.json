@@ -1,6 +1,6 @@
 {
   "name": "@mxweb/utils",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A comprehensive collection of TypeScript utilities for modern web development",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -119,6 +119,42 @@
       "import": "./dist/get-settled-value.mjs",
       "require": "./dist/get-settled-value.js",
       "default": "./dist/get-settled-value.mjs"
+    },
+    "./get-type-name": {
+      "types": "./dist/get-type-name.d.ts",
+      "import": "./dist/get-type-name.mjs",
+      "require": "./dist/get-type-name.js",
+      "default": "./dist/get-type-name.mjs"
+    },
+    "./has-own-property": {
+      "types": "./dist/has-own-property.d.ts",
+      "import": "./dist/has-own-property.mjs",
+      "require": "./dist/has-own-property.js",
+      "default": "./dist/has-own-property.mjs"
+    },
+    "./is-browser": {
+      "types": "./dist/is-browser.d.ts",
+      "import": "./dist/is-browser.mjs",
+      "require": "./dist/is-browser.js",
+      "default": "./dist/is-browser.mjs"
+    },
+    "./is-callable": {
+      "types": "./dist/is-callable.d.ts",
+      "import": "./dist/is-callable.mjs",
+      "require": "./dist/is-callable.js",
+      "default": "./dist/is-callable.mjs"
+    },
+    "./is-equal-primitive": {
+      "types": "./dist/is-equal-primitive.d.ts",
+      "import": "./dist/is-equal-primitive.mjs",
+      "require": "./dist/is-equal-primitive.js",
+      "default": "./dist/is-equal-primitive.mjs"
+    },
+    "./is-nullish": {
+      "types": "./dist/is-nullish.d.ts",
+      "import": "./dist/is-nullish.mjs",
+      "require": "./dist/is-nullish.js",
+      "default": "./dist/is-nullish.mjs"
     },
     "./interpolate": {
       "types": "./dist/interpolate.d.ts",
