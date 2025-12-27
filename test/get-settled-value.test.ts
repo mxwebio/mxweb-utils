@@ -164,21 +164,11 @@ describe("getSettledValue", () => {
       const fetchSuccess = () => Promise.resolve({ data: "success" });
       const fetchFail = () => Promise.reject(new Error("Network error"));
 
-      const results = await Promise.allSettled([
-        fetchSuccess(),
-        fetchFail(),
-        fetchSuccess(),
-      ]);
+      const results = await Promise.allSettled([fetchSuccess(), fetchFail(), fetchSuccess()]);
 
-      const data = results.map((result) =>
-        getSettledValue(result, { data: "error" })
-      );
+      const data = results.map((result) => getSettledValue(result, { data: "error" }));
 
-      expect(data).toEqual([
-        { data: "success" },
-        { data: "error" },
-        { data: "success" },
-      ]);
+      expect(data).toEqual([{ data: "success" }, { data: "error" }, { data: "success" }]);
     });
 
     it("should handle all rejected promises", async () => {
