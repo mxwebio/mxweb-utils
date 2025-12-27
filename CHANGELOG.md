@@ -5,6 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.5] - 2025-12-27
+
+### Added
+
+- **isEqualPrimitive function** - Deep equality comparison for primitives, arrays, and plain objects
+  - Recursively compares nested structures
+  - Handles all primitive types including null and undefined
+  - Type-safe comparison with proper TypeScript support
+- **isNullish function** - Type guard to check if a value is null or undefined
+  - Provides TypeScript type narrowing in conditional blocks
+  - Useful for filtering and validation
+- **hasOwnProperty function** - Type-safe check if an object has a specific own property
+  - Uses `Object.prototype.hasOwnProperty.call()` for safety
+  - Works with null prototype objects
+  - Provides TypeScript type narrowing
+  - Supports optional `Value` generic for typed property access
+  - Supports `LiteralObject`, `LiteralFunction`, and `LiteralClass`
+- **isBrowser function** - Detect if running in a browser environment
+  - Useful for isomorphic/universal applications
+  - SSR/SSG safe code execution
+- **isCallable function** - Check if a value or object property is callable
+  - Supports regular, async, generator, and async generator functions
+  - Works with objects, functions with properties, and static class methods
+  - Supports `LiteralObject`, `LiteralFunction`, and `LiteralClass`
+- **getTypeName function** - Get the internal `[[Class]]` type tag of a value
+  - Uses `Object.prototype.toString.call()` for accurate type detection
+  - Returns format like `[object Type]`
+- **LiteralObject type** - Generic object literal type for any key-value pairs
+  - Supports string, number, and symbol keys (PropertyKey)
+- **LiteralFunction type** - Generic function type as safer alternative to `Function`
+  - Uses `Callback<any, any[]>` internally
+- **LiteralClass type** - Generic class/constructor type for instantiable classes
+  - Useful for dependency injection and factory patterns
+- **GeneratorCallback type** - Generator function type that returns `Generator<T>`
+- **AsyncGeneratorCallback type** - Async generator function type that returns `AsyncGenerator<T>`
+
 ## [0.0.4] - 2025-11-13
 
 ### Removed
