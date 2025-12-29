@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.6] - 2025-12-29
+
+### Added
+
+- **BuiltInPrimitive type** - Union type of all built-in primitive and object types
+  - Includes Date, RegExp, TypedArrays, File API types, Fetch API types
+  - Stream API, Event types, Observer types, Worker/messaging types
+  - Generator types, DOM types, and Error types
+- **ExtendedFunction type** - Function type with additional properties
+  - Combines callable function with object type
+  - Useful for functions with metadata or namespaced utilities
+- **PartialBuiltIn type** - Deep partial type that correctly handles built-in types
+  - Preserves structure of Map, Set, WeakMap, WeakSet, Promise, WeakRef, FinalizationRegistry
+  - Recursively makes object properties optional
+  - Handles functions with properties
+
+### Changed
+
+- **tsconfig.json** - Updated target and lib from ES2020 to ES2021
+  - Adds support for WeakRef, FinalizationRegistry, and AggregateError
+
 ## [0.0.5] - 2025-12-27
 
 ### Added
