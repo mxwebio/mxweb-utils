@@ -241,3 +241,209 @@ export type LiteralFunction = Callback<unknown | Promise<unknown>, any[]>;
  * ```
  */
 export type LiteralClass<T = unknown> = new (...args: any[]) => T;
+
+/**
+ * A union type of all built-in primitive and object types in JavaScript/TypeScript.
+ *
+ * This type includes:
+ * - Basic primitives (string, number, boolean, null, undefined, bigint, symbol)
+ * - Date and RegExp
+ * - File API types (File, FileList, Blob, FormData)
+ * - URL and URLSearchParams
+ * - Binary data types (ArrayBuffer, SharedArrayBuffer, DataView, TypedArrays)
+ * - Fetch API types (Headers, Request, Response)
+ * - Abort API (AbortController, AbortSignal)
+ * - Stream API (ReadableStream, WritableStream, TransformStream)
+ * - Event types (Event, CustomEvent, EventTarget)
+ * - Observer types (MutationObserver, IntersectionObserver, ResizeObserver)
+ * - Worker and messaging types (Worker, MessageChannel, MessagePort, BroadcastChannel)
+ * - Generator types (Generator, AsyncGenerator)
+ * - DOM types (Element, HTMLElement, Node, Document, Window)
+ * - Error types (Error, TypeError, RangeError, SyntaxError, ReferenceError, EvalError, AggregateError, URIError)
+ *
+ * @since 0.0.6
+ * @example
+ * ```typescript
+ * // Use as a constraint for generic types
+ * function isBuiltIn<T>(value: T): value is T & BuiltInPrimitive {
+ *   return value instanceof Date || value instanceof RegExp || typeof value !== 'object';
+ * }
+ *
+ * // Use in conditional types
+ * type ExtractBuiltIn<T> = T extends BuiltInPrimitive ? T : never;
+ * ```
+ */
+export type BuiltInPrimitive =
+  | Primitive
+  | bigint
+  | symbol
+  | Date
+  | RegExp
+  | File
+  | FileList
+  | URL
+  | Blob
+  | ArrayBuffer
+  | SharedArrayBuffer
+  | DataView
+  | Int8Array
+  | Uint8Array
+  | Uint8ClampedArray
+  | Int16Array
+  | Uint16Array
+  | Int32Array
+  | Uint32Array
+  | Float32Array
+  | Float64Array
+  | BigInt64Array
+  | BigUint64Array
+  | FormData
+  | Headers
+  | Request
+  | Response
+  | URLSearchParams
+  | AbortController
+  | AbortSignal
+  | ReadableStream
+  | WritableStream
+  | TransformStream
+  | Event
+  | CustomEvent
+  | EventTarget
+  | MutationObserver
+  | IntersectionObserver
+  | ResizeObserver
+  | Worker
+  | MessageChannel
+  | MessagePort
+  | BroadcastChannel
+  | Generator
+  | AsyncGenerator
+  | Element
+  | HTMLElement
+  | Node
+  | Document
+  | Window
+  | Error
+  | TypeError
+  | RangeError
+  | SyntaxError
+  | ReferenceError
+  | EvalError
+  | AggregateError
+  | URIError;
+
+/**
+ * A function type that can have additional properties attached to it.
+ *
+ * This type combines a callable function with an object type, allowing
+ * functions to have custom properties. Useful for creating functions with
+ * metadata, configuration, or namespaced utilities.
+ *
+ * @since 0.0.6
+ * @template F - The function type (default: Callback<any, any[]>)
+ * @template O - The object type for additional properties (default: LiteralObject)
+ * @example
+ * ```typescript
+ * // Function with version property
+ * type VersionedFn = ExtendedFunction<() => void, { version: string }>;
+ * const myFn: VersionedFn = Object.assign(() => {}, { version: "1.0.0" });
+ * myFn(); // callable
+ * console.log(myFn.version); // "1.0.0"
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Utility namespace pattern
+ * type StringUtils = ExtendedFunction<
+ *   (str: string) => string,
+ *   { uppercase: (s: string) => string; lowercase: (s: string) => string }
+ * >;
+ *
+ * const strUtils: StringUtils = Object.assign(
+ *   (str: string) => str.trim(),
+ *   {
+ *     uppercase: (s: string) => s.toUpperCase(),
+ *     lowercase: (s: string) => s.toLowerCase(),
+ *   }
+ * );
+ * ```
+ */
+export type ExtendedFunction<F = Callback<any, any[]>, O = LiteralObject> = F & O;
+
+/**
+ * A deep partial type that correctly handles built-in types.
+ *
+ * Unlike the standard `Partial<T>`, this type recursively makes all properties
+ * optional while preserving the structure of built-in types like Map, Set,
+ * WeakMap, WeakSet, Promise, WeakRef, FinalizationRegistry, and Arrays.
+ *
+ * Built-in primitives (Date, RegExp, TypedArrays, etc.) are preserved as-is.
+ * Object types have their properties made optional recursively.
+ * Functions with properties have their properties made optional.
+ *
+ * @since 0.0.6
+ * @template T - The type to make partially optional
+ * @example
+ * ```typescript
+ * interface User {
+ *   name: string;
+ *   address: {
+ *     city: string;
+ *     zip: string;
+ *   };
+ *   tags: Set<string>;
+ * }
+ *
+ * // All properties become optional, including nested ones
+ * type PartialUser = PartialBuiltIn<User>;
+ * const user: PartialUser = {
+ *   name: "John",
+ *   // address and tags are optional
+ * };
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Built-in types are preserved correctly
+ * type PartialMap = PartialBuiltIn<Map<string, { value: number }>>;
+ * // Result: Map<PartialBuiltIn<string>, PartialBuiltIn<{ value: number }>>
+ *
+ * type PartialPromise = PartialBuiltIn<Promise<{ data: string }>>;
+ * // Result: Promise<PartialBuiltIn<{ data: string }>>
+ * ```
+ */
+export type PartialBuiltIn<T> =
+  T extends Map<infer K, infer V>
+    ? Map<PartialBuiltIn<K>, PartialBuiltIn<V>>
+    : T extends WeakMap<infer K, infer V>
+      ? WeakMap<PartialBuiltIn<K>, PartialBuiltIn<V>>
+      : T extends ReadonlyMap<infer K, infer V>
+        ? ReadonlyMap<PartialBuiltIn<K>, PartialBuiltIn<V>>
+        : T extends Set<infer U>
+          ? Set<PartialBuiltIn<U>>
+          : T extends WeakSet<infer U>
+            ? WeakSet<PartialBuiltIn<U>>
+            : T extends ReadonlySet<infer U>
+              ? ReadonlySet<PartialBuiltIn<U>>
+              : T extends Promise<infer U>
+                ? Promise<PartialBuiltIn<U>>
+                : T extends WeakRef<infer U>
+                  ? WeakRef<PartialBuiltIn<U>>
+                  : T extends FinalizationRegistry<infer U>
+                    ? FinalizationRegistry<PartialBuiltIn<U>>
+                    : T extends BuiltInPrimitive
+                      ? T
+                      : T extends ExtendedFunction
+                        ? T extends ExtendedFunction<infer F>
+                          ? F & {
+                              [K in keyof T]?: PartialBuiltIn<T[K]>;
+                            }
+                          : T
+                        : T extends LiteralObject
+                          ? { [K in keyof T]?: PartialBuiltIn<T[K]> }
+                          : T extends Array<infer U>
+                            ? Array<PartialBuiltIn<U>>
+                            : T extends ReadonlyArray<infer U>
+                              ? ReadonlyArray<PartialBuiltIn<U>>
+                              : T;
