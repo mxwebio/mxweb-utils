@@ -1,6 +1,6 @@
 {
   "name": "@mxweb/utils",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A comprehensive collection of TypeScript utilities for modern web development",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
